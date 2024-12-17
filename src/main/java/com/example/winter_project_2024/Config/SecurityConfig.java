@@ -1,5 +1,6 @@
 package com.example.winter_project_2024.Config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -34,11 +35,20 @@ public class SecurityConfig {
 
 
         http.formLogin(auth -> auth
-                .loginPage("https://indianpoker.mooo.com/login")    //기본 로그인 페이지 설정
-                .defaultSuccessUrl("/")     //성공시 리다이렉트할 URL
+                .loginProcessingUrl("/login")    //성공시 리다이렉트할 URL
                 .usernameParameter("memberId")      //로그인 폼에서 ID 필드의 name 속성
                 .passwordParameter("memberPassword")        //로그인 폼에서 비밀번호 필드의 name 속성
-                .failureUrl("/login?error=true"));     //실패시 리다이렉트할 URL
+                .successHandler((request, response, authentication) -> {
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+                    response.getWriter().write("{\"message\": \"로그인 성공\"}");
+                })
+                .failureHandler((request, response, exception) -> {
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter().write("{\"message\": \"로그인 성공\"}");
+                }));
 
         http.sessionManagement(session-> session
                 .maximumSessions(1)     //사용자 한명이 가질 수 있는 최대 세션 개수 (다중 로그인 제한)
@@ -48,8 +58,7 @@ public class SecurityConfig {
                 .sessionFixation().changeSessionId());      //세션 고정 공격을 막기 위한 코드
 
         http.logout(auth -> auth
-                .logoutUrl("/logout")       //로그아웃 URL
-                .logoutSuccessUrl("/"));        //로그아웃 성공 시 리다이렉트 할 URL
+                .logoutUrl("/logout"));       //로그아웃 URL
 
         //http.csrf(AbstractHttpConfigurer::disable);     //csrf 보호 (위변조 방지 어쩌구 저쩌구)비활성화
 
