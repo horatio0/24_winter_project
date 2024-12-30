@@ -8,7 +8,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -39,7 +43,13 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         UserDetailDTO userDetailDTO = (UserDetailDTO) authentication.getPrincipal();
 
         String id = userDetailDTO.getUsername();
-        String token = jwtUtil.createJwt(id, 60*60*10L);
+
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        Iterator<? extends  GrantedAuthority> iterator = authorities.iterator();
+        GrantedAuthority auth = iterator.next();
+        String role = auth.getAuthority();
+
+        String token = jwtUtil.createJwt(id, role, 60*60*10L);
 
         response.addHeader("Authorization", "Bearer " + token);
     }
