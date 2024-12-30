@@ -37,7 +37,7 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         //Bearer 부분 제거 후 순수 토큰만 추출
-        String token = auth.split(" ")[1];
+        String token = auth.split("%")[1];
 
         //소멸시간 검증
         if(jwtUtil.isExpired(token)){
