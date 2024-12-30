@@ -22,6 +22,11 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        if (request.getRequestURI().equals("/")){
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         //request에서 Authorization값 가져오기
         String auth = request.getHeader("Authorization");
 
