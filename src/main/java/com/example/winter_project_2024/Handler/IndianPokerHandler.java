@@ -57,6 +57,12 @@ public class IndianPokerHandler extends TextWebSocketHandler {
 
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+
+        sessionToRoom.forEach((key, value) -> {
+            log.info("key : {} , value : {}", key, value);
+        });
+        log.info("세션 Id : {}",session.getId());
+
         Room room = roomRegistry.getRoom(sessionToRoom.get(session.getId()));                   // sessionId를 이용해 room 객체를 가져와
         String payload = message.getPayload();                                                  // 프론트에서 온 message를 가져와
         ObjectMapper objectMapper = new ObjectMapper();                                         // objectmapper : json string converter
@@ -97,8 +103,6 @@ public class IndianPokerHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, @NonNull CloseStatus status) throws Exception {
         String roomId = getRoomIdFromSession(session.getUri());
-        log.info(session.getUri().toString());
-        log.info(roomId);
         Room room = roomRegistry.getRoom(roomId);
         try{
             memberService.setMoney(Objects.requireNonNull(session.getPrincipal()).getName(), room.getMemberInfo(session.getId()).getMoney());
