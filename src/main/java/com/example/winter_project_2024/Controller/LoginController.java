@@ -9,10 +9,20 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 public class LoginController {
     private AuthenticationManager authenticationManager;
+
+    @GetMapping("/")
+    public Map<String, String> hello(){
+        Map<String, String> map = new HashMap<>();
+        map.put("message", "hello");
+        return map;
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO){
