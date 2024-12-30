@@ -42,9 +42,11 @@ public class JWTFilter extends OncePerRequestFilter {
 
         //토큰에서 id 추출
         String id = jwtUtil.getId(token);
+        String role = jwtUtil.getRole(token);
 
         Member member = new Member();
         member.setMemberId(id);
+        member.setRole(role);
 
         UserDetailDTO userDetailDTO = new UserDetailDTO(member);
 
