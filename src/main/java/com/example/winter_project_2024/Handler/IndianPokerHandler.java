@@ -97,6 +97,8 @@ public class IndianPokerHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, @NonNull CloseStatus status) throws Exception {
         String roomId = getRoomIdFromSession(session.getUri());
+        log.info(session.getUri().toString());
+        log.info(roomId);
         Room room = roomRegistry.getRoom(roomId);
         try{
             memberService.setMoney(Objects.requireNonNull(session.getPrincipal()).getName(), room.getMemberInfo(session.getId()).getMoney());
