@@ -7,7 +7,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,6 +29,11 @@ public class JWTFilter extends OncePerRequestFilter {
 
         //request에서 Authorization값 가져오기
         String auth = request.getHeader("Authorization");
+
+        //헤더에 없으면 쿼리 파라미터에서 재시도!!
+        if(auth==null) {
+            auth = request.getParameter("token");
+        }
 
         //토큰이 없거나 구조가 이상하면 이 필터를 건너 뜀
         if(auth==null || !auth.startsWith("Bearer ")){
