@@ -39,7 +39,12 @@ public class IndianPokerHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+
+        log.info(session.getPrincipal().getName());
+
         String roomId = getRoomIdFromSession(session.getUri());                                 // 세션으로 부터 roomId를 가져와
+        log.info("이것이 당신의 roomId 입니다 : {}", roomId);
+
         if (roomId == null) session.close();
         else{
             Room room = roomRegistry.getOrCreateRoom(roomId, session.getId());                      // roomId를 이용해 room객체를 검색하고 없으면 만들어
@@ -49,7 +54,10 @@ public class IndianPokerHandler extends TextWebSocketHandler {
                 sessionToRoom.put(session.getId(), roomId);                                             // sessionId와 roomId를 매핑해
 
                 broadcast(room, member.getNickname() + "님이 입장하셨습니다.", 0, null);                // 입장 멘트 브로드캐스팅
+                log.info("브로트 캐스트 완");
             } catch (NullPointerException e) {              // NullPoint 발생 불가능 하지만 일단 처리
+                log.info("바로 null point 정상화");
+                log.info(e.getMessage());
                 broadcast(room, "Err_UserNotFound__", 404, "error");
             }
         }
