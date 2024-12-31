@@ -35,6 +35,7 @@ public class JWTFilter extends OncePerRequestFilter {
         //헤더에 없으면 쿼리 파라미터에서 재시도!!
         if(auth==null) {
             auth = request.getParameter("token");
+            log.info(auth);
         }
 
         //토큰이 없거나 구조가 이상하면 이 필터를 건너 뜀
@@ -45,7 +46,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         //Bearer 부분 제거 후 순수 토큰만 추출
         String token = auth.split(" ")[1];
-
+        log.info(token);
         //소멸시간 검증
         if(jwtUtil.isExpired(token)){
             filterChain.doFilter(request,response);
@@ -61,9 +62,9 @@ public class JWTFilter extends OncePerRequestFilter {
         member.setRole(role);
 
         UserDetailDTO userDetailDTO = new UserDetailDTO(member);
-
+        log.info(userDetailDTO.getUsername());
         Authentication authToken = new UsernamePasswordAuthenticationToken(userDetailDTO, null, userDetailDTO.getAuthorities());
-
+        log.info(authToken.getName());
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
         filterChain.doFilter(request, response);
