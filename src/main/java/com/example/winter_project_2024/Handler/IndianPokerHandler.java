@@ -40,7 +40,8 @@ public class IndianPokerHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 
-        log.info(session.getPrincipal().getName());
+        Authentication authentication = (Authentication) session.getAttributes().get("auth");
+        log.info(authentication.getName());
 
         String roomId = getRoomIdFromSession(session.getUri());                                 // 세션으로 부터 roomId를 가져와
         log.info("이것이 당신의 roomId 입니다 : {}", roomId);

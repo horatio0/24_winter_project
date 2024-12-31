@@ -19,10 +19,13 @@ public class JwtToWebSocket implements HandshakeInterceptor {
         String queryString = request.getURI().getQuery();
         if (queryString != null && queryString.contains("token=")) {
             String token = extractTokenFromQuery(queryString);
+            log.info("악수 중 : 토큰 추출 함  = {}", token);
             if(token != null && !token.isEmpty()){
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                log.info("악수 중 : 토큰으로 인증 정보 불러오기");
                 if (authentication != null && authentication.isAuthenticated()) {
-                    attributes.put("SPRING_SECURITY_CONTEXT", authentication);
+                    attributes.put("auth", authentication);
+                    log.info("모든 것이 완벽");
                     return true;
                 }
             }

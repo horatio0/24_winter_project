@@ -35,7 +35,6 @@ public class JWTFilter extends OncePerRequestFilter {
         //헤더에 없으면 쿼리 파라미터에서 재시도!!
         if(auth==null) {
             auth = request.getParameter("token");
-            log.info("파라미터에서 토큰을 가져와요 : {}", auth);
         }
 
         //토큰이 없거나 구조가 이상하면 이 필터를 건너 뜀
