@@ -50,7 +50,7 @@ public class IndianPokerHandler extends TextWebSocketHandler {
         else{
             Room room = roomRegistry.getOrCreateRoom(roomId, session.getId());                      // roomId를 이용해 room객체를 검색하고 없으면 만들어
             try {
-                MemberDTO member = memberService.getMemberInfo(Objects.requireNonNull(session.getPrincipal()).getName());       // 세션에 담긴 spring security 인증 정보를 이용해 사용자 정보를 가져와
+                MemberDTO member = memberService.getMemberInfo(authentication.getName());       // 세션에 담긴 spring security 인증 정보를 이용해 사용자 정보를 가져와
                 room.addMember(member, session);                                                        // room에 참가자를 추가해
                 sessionToRoom.put(session.getId(), roomId);                                             // sessionId와 roomId를 매핑해
 

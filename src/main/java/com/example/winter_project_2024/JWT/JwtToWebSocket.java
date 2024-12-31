@@ -22,7 +22,7 @@ public class JwtToWebSocket implements HandshakeInterceptor {
             log.info("악수 중 : 토큰 추출 함  = {}", token);
             if(token != null && !token.isEmpty()){
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                log.info("악수 중 : 토큰으로 인증 정보 불러오기");
+                log.info("악수 중 : 토큰으로 인증 정보 불러오기 = {}", authentication.getName());
                 if (authentication != null && authentication.isAuthenticated()) {
                     attributes.put("auth", authentication);
                     log.info("모든 것이 완벽");
