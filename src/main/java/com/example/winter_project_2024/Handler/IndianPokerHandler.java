@@ -66,6 +66,9 @@ public class IndianPokerHandler extends TextWebSocketHandler {
         ParsingDTO parsingDTO = objectMapper.readValue(payload, ParsingDTO.class);              // 프린트에서 온 json message를 객체로 매핑
 
         switch (parsingDTO.getType().toLowerCase()) {                                           // 프론트에서 뭘 요구했나
+            case "check" :
+                broadcast(room, "money : " + room.getMemberInfo(session.getId()).getMoney() + "total amount : " + room.getTotalAmount(), 0, null);
+                break;
             case "roomid" :
                 broadcast(room, "현재 입장하신 방의 ID는 : " + room.getRoomId() + " 입니다", 0, null);
                 break;
@@ -104,9 +107,10 @@ public class IndianPokerHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, @NonNull CloseStatus status) throws Exception {
         String roomId = getRoomIdFromSession(session.getUri());
+        Authentication authentication = (Authentication) session.getAttributes().get("auth");
         Room room = roomRegistry.getRoom(roomId);
         try{
-            memberService.setMoney(Objects.requireNonNull(session.getPrincipal()).getName(), room.getMemberInfo(session.getId()).getMoney());
+            memberService.setMoney(authentication.getName(), room.getMemberInfo(session.getId()).getMoney());
             room.removeMember(session.getId());
 
             broadcast(room, room.getMemberInfo(session.getId()).getNickname() + "님이 나갔습니다.", 0, null);
@@ -119,11 +123,12 @@ public class IndianPokerHandler extends TextWebSocketHandler {
         }
     }
 
-    private void shuffle(Room room){
+    private void shuffle(Room room) throws JsonProcessingException {
         int card;
         for (Participant p : room.getMember().values()){
             card = (int)(Math.random()*9+1);
             p.setCard(card);
+            broadcastExcept(room, p.getNickname() + " : " + p.getCard(), 0, "CardBroadcast", p.getSession());
         }
     }
 
@@ -139,7 +144,10 @@ public class IndianPokerHandler extends TextWebSocketHandler {
         boolean isSameScore = false;
         for (Participant p : room.getMember().values()){
             broadcast(room, p.getNickname() + "님은 " + p.getCard() + " 카드를 들고있었습니다!", 0, null);
-            if(p.getCard() > max) winner = p;
+            if(p.getCard() > max) {
+                winner = p;
+                max = p.getCard();
+            }
         }
         for (Participant p : room.getMember().values()){
             if (p.getCard() == max && !(p.getNickname().equals(winner.getNickname()))) {
@@ -198,6 +206,30 @@ public class IndianPokerHandler extends TextWebSocketHandler {
         room.getMember().values().stream()
                 .map(Participant::getSession)
                 .filter(WebSocketSession::isOpen)
+                .forEach(s -> {
+                    try {
+                        s.sendMessage(new TextMessage(json));
+                    } catch (IOException e) {
+                        log.error(" > 메세지 전송 실패 - 세션 ID : {}", s.getId());
+                    }
+                });
+    }
+
+    private void broadcastExcept(Room room, String msg, int val, String type, WebSocketSession exceptSession) throws JsonProcessingException {
+
+        MessageDTO message = MessageDTO.builder()
+                .type(type)
+                .message(msg)
+                .value(val)
+                .build();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(message);
+
+        room.getMember().values().stream()
+                .map(Participant::getSession)
+                .filter(WebSocketSession::isOpen)
+                .filter(session -> !session.equals(exceptSession))
                 .forEach(s -> {
                     try {
                         s.sendMessage(new TextMessage(json));
