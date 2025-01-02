@@ -41,10 +41,7 @@ public class IndianPokerHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 
         Authentication authentication = (Authentication) session.getAttributes().get("auth");
-        log.info(authentication.getName());
-
         String roomId = getRoomIdFromSession(session.getUri());                                 // 세션으로 부터 roomId를 가져와
-        log.info("이것이 당신의 roomId 입니다 : {}", roomId);
 
         if (roomId == null) session.close();
         else{
@@ -55,10 +52,7 @@ public class IndianPokerHandler extends TextWebSocketHandler {
                 sessionToRoom.put(session.getId(), roomId);                                             // sessionId와 roomId를 매핑해
 
                 broadcast(room, member.getNickname() + "님이 입장하셨습니다.", 0, null);                // 입장 멘트 브로드캐스팅
-                log.info("브로트 캐스트 완");
             } catch (NullPointerException e) {              // NullPoint 발생 불가능 하지만 일단 처리
-                log.info("바로 null point 정상화");
-                log.info(e.getMessage());
                 broadcast(room, "Err_UserNotFound__", 404, "error");
             }
         }
@@ -72,6 +66,9 @@ public class IndianPokerHandler extends TextWebSocketHandler {
         ParsingDTO parsingDTO = objectMapper.readValue(payload, ParsingDTO.class);              // 프린트에서 온 json message를 객체로 매핑
 
         switch (parsingDTO.getType().toLowerCase()) {                                           // 프론트에서 뭘 요구했나
+            case "roomid" :
+                broadcast(room, "현재 입장하신 방의 ID는 : " + room.getRoomId() + " 입니다", 0, null);
+                break;
             case "start" :
                 room.setGameState(1);
                 room.setTotalAmount(0);
@@ -100,7 +97,8 @@ public class IndianPokerHandler extends TextWebSocketHandler {
                 broadcast(room, "게임이 종료되었습니다!", 0, null);
                 break;
             case "send_message" :
-                broadcast(room, parsingDTO.getMessage(), 0, null);
+                Participant p = room.getMemberInfo(session.getId());
+                broadcast(room, p.getNickname() + " : " + parsingDTO.getMessage(), 0, null);
         }
     }
     @Override
@@ -144,7 +142,7 @@ public class IndianPokerHandler extends TextWebSocketHandler {
             if(p.getCard() > max) winner = p;
         }
         for (Participant p : room.getMember().values()){
-            if (p.getCard() == max && !(p.getNickname().equals(winner))) {
+            if (p.getCard() == max && !(p.getNickname().equals(winner.getNickname()))) {
                 isSameScore = true;
                 break;
             }
@@ -173,9 +171,12 @@ public class IndianPokerHandler extends TextWebSocketHandler {
         Participant p = room.getMemberInfo(sessionId);                                          // 세션 아이디를 통해 참가자 정보 조회
         if(p==null) broadcast(room, "Err_UserNotFound__", 404, "error");
         else {
-            p.setBet(value);                                                                        // 참가자 bet 변수 설정
-            room.setTotalAmount(room.getTotalAmount()+value);
-            broadcast(room, p.getNickname() + "님이" + value + "원을 베팅했습니다.", room.getTotalAmount(), "bet"); // 베팅 브로드캐스트
+            if(value > p.getMoney()) broadcast(room, "본인이 가진 돈 이상으로는 베팅할 수 없습니다!", 0, null);
+            else {
+                p.setBet(value);                                                                        // 참가자 bet 변수 설정
+                room.setTotalAmount(room.getTotalAmount()+value);
+                broadcast(room, p.getNickname() + "님이" + value + "원을 베팅했습니다.", room.getTotalAmount(), "bet"); // 베팅 브로드캐스트
+            }
         }
     }
 

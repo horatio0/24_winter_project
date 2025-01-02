@@ -12,8 +12,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.SplittableRandom;
-
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -25,8 +23,10 @@ public class MemberService {
     //C
     public String join(Member member){
         if(memberRepository.existsById(member.getMemberId())) return "이미 존재하는 아이디 입니다";
+        else if(memberRepository.existsByNickname(member.getNickname())) return "이미 존재하는 닉네임 입니다.";
         else {
             member.setPassword(bCryptPasswordEncoder.encode(member.getPassword()));
+            member.setMoney(100);
             member.setRole("ROLE_USER");
             memberRepository.save(member);
             return "회원가입이 완료되었습니다.";

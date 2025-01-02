@@ -6,7 +6,6 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.socket.WebSocketHandler;
-import org.springframework.web.socket.server.HandshakeFailureException;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
 import java.util.Map;
@@ -19,13 +18,10 @@ public class JwtToWebSocket implements HandshakeInterceptor {
         String queryString = request.getURI().getQuery();
         if (queryString != null && queryString.contains("token=")) {
             String token = extractTokenFromQuery(queryString);
-            log.info("악수 중 : 토큰 추출 함  = {}", token);
             if(token != null && !token.isEmpty()){
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                log.info("악수 중 : 토큰으로 인증 정보 불러오기 = {}", authentication.getName());
                 if (authentication != null && authentication.isAuthenticated()) {
                     attributes.put("auth", authentication);
-                    log.info("모든 것이 완벽");
                     return true;
                 }
             }
