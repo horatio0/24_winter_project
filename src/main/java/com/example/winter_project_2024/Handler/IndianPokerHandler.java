@@ -111,9 +111,9 @@ public class IndianPokerHandler extends TextWebSocketHandler {
         Room room = roomRegistry.getRoom(roomId);
         try{
             memberService.setMoney(authentication.getName(), room.getMemberInfo(session.getId()).getMoney());
-            room.removeMember(session.getId());
 
             broadcast(room, room.getMemberInfo(session.getId()).getNickname() + "님이 나갔습니다.", 0, null);
+            room.removeMember(session.getId());
 
             sessionToRoom.remove(session.getId());
             if(session.getId().equals(room.getBoss())) broadcast(room, room.newBoss(), 0, null);
