@@ -10,6 +10,7 @@ import com.example.winter_project_2024.Service.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -21,11 +22,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class IndianPokerHandler extends TextWebSocketHandler {
 
     private final RoomRegistry roomRegistry = new RoomRegistry();
@@ -33,9 +34,9 @@ public class IndianPokerHandler extends TextWebSocketHandler {
     private final MemberService memberService;
 
 
-    public IndianPokerHandler(MemberService memberService) {
-        this.memberService = memberService;
-    }
+//    public IndianPokerHandler(MemberService memberService) {
+//        this.memberService = memberService;
+//    }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
