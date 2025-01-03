@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class IndianPokerHandler extends TextWebSocketHandler {
 
-    private final RoomRegistry roomRegistry = new RoomRegistry();
+    private final RoomRegistry roomRegistry;
     private final ConcurrentHashMap<String, String> sessionToRoom = new ConcurrentHashMap<>();
     private final MemberService memberService;
 
