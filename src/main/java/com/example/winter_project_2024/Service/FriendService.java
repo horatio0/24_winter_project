@@ -40,6 +40,7 @@ public class FriendService {
             friend.setFriendNickname(sender.getNickname());
             friendRepository.save(friend);
 
+            friend = new Friend();
             friend.setMe(sender);
             friend.setFriendNickname(me.getNickname());
             friendRepository.save(friend);
