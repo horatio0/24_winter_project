@@ -61,7 +61,7 @@ public class MemberService {
         }
     }
 
-    public MoneyDTO setMoney(String id, int value){
+    public MoneyDTO updateMoney(String id, int value){              //머니 구매 시
         MoneyDTO money = new MoneyDTO();
         Member member = memberRepository.getReferenceById(id);
 
@@ -70,5 +70,9 @@ public class MemberService {
         money.setAfter(member.getMoney());
 
         return money;
+    }
+
+    public void setMoney(String id, int value){                     //게임 종료 후 머니 업데이트
+        memberRepository.getReferenceById(id).setMoney(value);
     }
 }

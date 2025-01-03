@@ -48,6 +48,6 @@ public class MemberController {
 
     @PutMapping("/update/money")
     public MoneyDTO updateMoney(@AuthenticationPrincipal UserDetails userDetails, @RequestParam int value){
-        return memberService.setMoney(userDetails.getUsername(), value);
+        return memberService.updateMoney(userDetails.getUsername(), value);
     }
 }
