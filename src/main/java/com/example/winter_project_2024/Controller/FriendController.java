@@ -36,7 +36,7 @@ public class FriendController {
     }
 
     @GetMapping("/friend")
-    public Set<Friend> getFriend(@AuthenticationPrincipal UserDetails userDetails){
-        return friendService.getFriend(userDetails.getUsername());
+    public Set<String> getFriend(@AuthenticationPrincipal UserDetails userDetails){
+        return friendService.getFriends(userDetails.getUsername());
     }
 }

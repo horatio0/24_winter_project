@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -24,8 +25,12 @@ public class FriendService {
     private final FriendInviteRepository inviteRepository;
     private final MemberRepository memberRepository;
 
-    public Set<Friend> getFriend(String myId){
-        return memberRepository.getReferenceById(myId).getFriends();
+    public Set<String> getFriends(String myId){
+        Set<String> friends = new HashSet<>();
+        memberRepository.getReferenceById(myId).getFriends().forEach(friend -> {
+            friends.add(friend.getFriendNickname());
+        });
+        return friends;
     }
 
     public String acceptInvite(String myId, String senderId){
