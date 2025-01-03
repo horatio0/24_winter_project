@@ -1,10 +1,13 @@
 package com.example.winter_project_2024.Repository;
 
 import com.example.winter_project_2024.Entity.Room;
-import org.springframework.web.socket.WebSocketSession;
+import org.springframework.stereotype.Repository;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Repository
 public class RoomRegistry {
     private final ConcurrentHashMap<String, Room> rooms = new ConcurrentHashMap<String, Room>();
 
@@ -25,5 +28,13 @@ public class RoomRegistry {
 
     public void removeRoom(String roomId){
         rooms.remove(roomId);
+    }
+
+    public Set<String> getRooms(){
+        Set<String> roomList = new HashSet<>();
+        rooms.values().forEach(room -> {
+            roomList.add(room.getRoomId());
+        });
+        return roomList;
     }
 }
