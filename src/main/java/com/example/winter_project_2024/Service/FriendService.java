@@ -7,11 +7,13 @@ import com.example.winter_project_2024.Repository.FriendInviteRepository;
 import com.example.winter_project_2024.Repository.FriendRepository;
 import com.example.winter_project_2024.Repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FriendService {
@@ -42,6 +44,7 @@ public class FriendService {
 
             return "요청이 수락되었습니다";
         } catch (Exception e) {
+            log.info(e.getMessage());
             return "오류가 발생했습니다.";
         }
     }

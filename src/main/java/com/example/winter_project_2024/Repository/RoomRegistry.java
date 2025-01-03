@@ -21,6 +21,9 @@ public class RoomRegistry {
             room.setGameState(0);
             rooms.put(roomId, room);
         }
+        log.info("정상 추가 됨 : {}", rooms.toString());
+        log.info("RoomRegistry 해시코드: {}", System.identityHashCode(this));
+        log.info("rooms 해시코드: {}", System.identityHashCode(rooms));
         return rooms.get(roomId);
     }
 
@@ -35,6 +38,8 @@ public class RoomRegistry {
     public Set<String> getRooms(){
         Set<String> roomList = new HashSet<>();
         log.info("현재 rooms : {}", rooms.toString());
+        log.info("RoomRegistry 해시코드: {}", System.identityHashCode(this));
+        log.info("rooms 해시코드: {}", System.identityHashCode(rooms));
         rooms.values().forEach(room -> {
             log.info("getRooms 동작 중 : {}", room);
             roomList.add(room.getRoomId());
