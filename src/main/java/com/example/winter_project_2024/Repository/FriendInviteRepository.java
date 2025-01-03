@@ -11,7 +11,7 @@ public interface FriendInviteRepository extends JpaRepository<FriendInvite, Stri
     @Query(value = "select sender from FriendInvite where receiver = :myId")
     public List<String> findByMyID(@Param(value = "myId")String myId);
 
-    @Query(value = "delete from FriendInvite where receiver = :myid and sender = :sender")
+    @Query(value = "delete from FriendInvite where receiver = :myId and sender = :sender")
     public void inviteAccept(@Param(value = "myId") String myId, @Param(value = "sender") String sender);
 
 }

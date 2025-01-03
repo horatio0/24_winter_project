@@ -20,7 +20,6 @@ public class RoomRegistry {
             room.setBoss(boss);
             room.setGameState(0);
             rooms.put(roomId, room);
-            log.info("room 추가 완료 : {}", rooms.get(roomId).getRoomId());
         }
         return rooms.get(roomId);
     }
@@ -35,6 +34,7 @@ public class RoomRegistry {
 
     public Set<String> getRooms(){
         Set<String> roomList = new HashSet<>();
+        log.info("현재 rooms : {}", rooms.toString());
         rooms.values().forEach(room -> {
             log.info("getRooms 동작 중 : {}", room);
             roomList.add(room.getRoomId());
