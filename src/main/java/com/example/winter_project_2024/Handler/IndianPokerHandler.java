@@ -33,11 +33,6 @@ public class IndianPokerHandler extends TextWebSocketHandler {
     private final ConcurrentHashMap<String, String> sessionToRoom = new ConcurrentHashMap<>();
     private final MemberService memberService;
 
-
-//    public IndianPokerHandler(MemberService memberService) {
-//        this.memberService = memberService;
-//    }
-
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 
