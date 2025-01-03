@@ -19,9 +19,8 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry){
-        //registry.addHandler(indianPokerHandler, "/ws/connect").setAllowedOrigins("https://indianpoker.mooo.com");
         registry.addHandler(indianPokerHandler, "/ws/connect")
                 .addInterceptors(new JwtToWebSocket())
-                .setAllowedOrigins("http://118.218.179.22:9998", "http://192.168.45.85:80");
+                .setAllowedOrigins("http://118.218.179.22:9998", "http://192.168.45.85:80", "http://indianpoker.mooo.com:9998");
     }
 }

@@ -9,7 +9,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     private static final String[] ALLOW_ORIGINS = {
             "http://118.218.179.22:9998",
-            "http://192.168.45.85:80"
+            "http://192.168.45.85:80",
+            "http://indianpoker.mooo.com:9998"
     };
 
     private static final String[] ALLOW_METHODS = {
