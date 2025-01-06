@@ -25,9 +25,9 @@ public class Member{
     private int win;
     private int totalGame;
 
-    @OneToMany(mappedBy = "me")
+    @OneToMany(mappedBy = "myFriend")
     private Set<Friend> friends = new HashSet<>();
 
-    @OneToMany(mappedBy = "recent")
+    @OneToMany(mappedBy = "myRecentPlayer")
     private Set<Member> recentPlayer = new HashSet<>();
 }

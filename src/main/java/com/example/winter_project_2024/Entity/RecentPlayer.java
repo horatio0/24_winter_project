@@ -15,7 +15,7 @@ public class RecentPlayer {
 
     @ManyToOne
     @JoinColumn(name = "me")
-    private Member me;
+    private Member myRecentPlayer;
 
     private String recentPlayerId;
 }

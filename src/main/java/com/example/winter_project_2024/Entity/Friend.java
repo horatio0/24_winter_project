@@ -16,7 +16,7 @@ public class Friend {
 
     @ManyToOne
     @JoinColumn(name = "me")
-    private Member me;
+    private Member myFriend;
 
     private String friendNickname;
 }
