@@ -11,42 +11,52 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/member")
 public class MemberController {
     private final MemberService memberService;
 
+    @GetMapping("/winrate")
+    public HashMap<String, Double> getWinRate(@AuthenticationPrincipal UserDetails userDetails){
+        HashMap<String, Double> winRate = new HashMap<>();
+        winRate.put("winrate", memberService.getWinRate(userDetails.getUsername()));
+        return winRate;
+    }
 
-    @PostMapping("/join")
+    @GetMapping("/recent_player")
+    public Set<String> getRecentPlayer(@AuthenticationPrincipal UserDetails userDetails){
+        return memberService.getRecentPlayer(userDetails.getUsername());
+    }
+
+    @PostMapping("/member/join")
     public HashMap<String, String> join(@RequestBody Member member){
         HashMap<String, String> response = new HashMap<>();
         response.put("message", memberService.join(member));
         return response;
     }
 
-    @GetMapping("/info")
+    @GetMapping("/member/info")
     public MemberDTO info(@AuthenticationPrincipal UserDetails userDetails){
         return memberService.getMemberInfo(userDetails.getUsername());
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/member/delete")
     public HashMap<String, String> delete(@AuthenticationPrincipal UserDetails userDetails){
         HashMap<String, String> response = new HashMap<>();
         response.put("message", memberService.delete(userDetails.getUsername()));
         return response;
     }
 
-    @PutMapping("/update")
+    @PutMapping("/member/update")
     public HashMap<String, String> update(@AuthenticationPrincipal UserDetails userDetails, @RequestBody MemberUpdateDTO memberUpdateDTO){
         HashMap<String, String> response = new HashMap<>();
         response.put("message", memberService.update(userDetails.getUsername(), memberUpdateDTO));
         return response;
     }
 
-    @PutMapping("/update/money")
+    @PutMapping("/member/update/money")
     public MoneyDTO updateMoney(@AuthenticationPrincipal UserDetails userDetails, @RequestParam int value){
         return memberService.updateMoney(userDetails.getUsername(), value);
     }

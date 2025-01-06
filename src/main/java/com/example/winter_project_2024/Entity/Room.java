@@ -16,6 +16,7 @@ public class Room {
 
     private int totalAmount;
     private int gameState;
+    private int dieOrAllInCount;
 
     public String newBoss() {
         if (member.isEmpty()) {
@@ -35,12 +36,20 @@ public class Room {
                 .money(memberDTO.getMoney())
                 .nickname(memberDTO.getNickname())
                 .session(session)
+                .allInOrDie(false)
                 .build();
         member.put(session.getId(), participant); // sessionId를 키로 추가
     }
 
     public void removeMember(String sessionId) {
         member.remove(sessionId); // sessionId로 직접 삭제
+    }
+
+    public boolean dieOrAllIn(String sessionId){
+        member.get(sessionId).setAllInOrDie(true);
+        dieOrAllInCount += 1;
+
+        return (member.values().size() - 1) <= dieOrAllInCount;
     }
 }
 

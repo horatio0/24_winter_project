@@ -3,6 +3,7 @@ package com.example.winter_project_2024.Handler;
 import com.example.winter_project_2024.DTO.MemberDTO;
 import com.example.winter_project_2024.DTO.MessageDTO;
 import com.example.winter_project_2024.DTO.ParsingDTO;
+import com.example.winter_project_2024.Entity.Member;
 import com.example.winter_project_2024.Entity.Participant;
 import com.example.winter_project_2024.Entity.Room;
 import com.example.winter_project_2024.Repository.RoomRegistry;
@@ -41,7 +42,7 @@ public class IndianPokerHandler extends TextWebSocketHandler {
 
         if (roomId == null) session.close();
         else{
-            Room room = roomRegistry.getOrCreateRoom(roomId, session.getId());                      // roomId를 이용해 room객체를 검색하고 없으면 만들어
+            Room room = roomRegistry.getOrCreateRoom(roomId, session.getId());                       // roomId를 이용해 room객체를 검색하고 없으면 만들어
             try {
                 MemberDTO member = memberService.getMemberInfo(authentication.getName());       // 세션에 담긴 spring security 인증 정보를 이용해 사용자 정보를 가져와
                 room.addMember(member, session);                                                        // room에 참가자를 추가해
@@ -62,9 +63,6 @@ public class IndianPokerHandler extends TextWebSocketHandler {
         ParsingDTO parsingDTO = objectMapper.readValue(payload, ParsingDTO.class);              // 프린트에서 온 json message를 객체로 매핑
 
         switch (parsingDTO.getType().toLowerCase()) {                                           // 프론트에서 뭘 요구했나
-            case "check" :
-                broadcast(room, "money : " + room.getMemberInfo(session.getId()).getMoney() + "total amount : " + room.getTotalAmount(), 0, null);
-                break;
             case "roomid" :
                 broadcast(room, "현재 입장하신 방의 ID는 : " + room.getRoomId() + " 입니다", 0, null);
                 break;
@@ -169,6 +167,11 @@ public class IndianPokerHandler extends TextWebSocketHandler {
             room.setTotalAmount(room.getTotalAmount()+p.getMoney());
             p.setBet(p.getMoney());
             broadcast(room, p.getNickname() + "님이 올인했습니다!", 0, null);
+
+            if(room.dieOrAllIn(sessionId)){
+                broadcast(room, "승자를 불러옵니다!", 0, null);
+                getWinner(room);
+            }
         }
     }
 
@@ -180,13 +183,27 @@ public class IndianPokerHandler extends TextWebSocketHandler {
             else {
                 p.setBet(value);                                                                        // 참가자 bet 변수 설정
                 room.setTotalAmount(room.getTotalAmount()+value);
-                broadcast(room, p.getNickname() + "님이" + value + "원을 베팅했습니다.", room.getTotalAmount(), "bet"); // 베팅 브로드캐스트
+                broadcast(room, p.getNickname() + "님이" + value + "원을 베팅했습니다.\n현재 남은 돈 : " + p.getMoney() + "원입니다!", room.getTotalAmount(), "bet"); // 베팅 브로드캐스트
+
+                if (p.getMoney()<=0) if(room.dieOrAllIn(sessionId)) {
+                    broadcast(room, "승자를 불러옵니다!", 0, null);
+                    getWinner(room);
+                }
             }
         }
     }
 
     private String getRoomIdFromSession(URI uri) {
         return UriComponentsBuilder.fromUri(uri).build().getQueryParams().getFirst("roomId");
+    }
+
+    private void winAndTotalCount(Participant winner, Room room){
+        room.getMember().values().forEach(participant -> {
+            Member m = new Member();
+            m.setTotalGame(m.getTotalGame()+1);
+        });
+        Member member = memberService.getMember(winner.getNickname());
+        member.setWin(member.getWin()+1);
     }
 
     private void broadcast(Room room, String msg, int val, String type) throws JsonProcessingException {

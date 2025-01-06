@@ -17,6 +17,7 @@ public class RoomRegistry {
             room.setRoomId(roomId);
             room.setBoss(boss);
             room.setGameState(0);
+            room.setDieOrAllInCount(0);
             rooms.put(roomId, room);
         }
         return rooms.get(roomId);

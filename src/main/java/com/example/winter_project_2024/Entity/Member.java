@@ -22,7 +22,12 @@ public class Member{
     private int money;
     private String nickname;
     private String role;
+    private int win;
+    private int totalGame;
 
     @OneToMany(mappedBy = "me")
     private Set<Friend> friends = new HashSet<>();
+
+    @OneToMany(mappedBy = "recent")
+    private Set<Member> recentPlayer = new HashSet<>();
 }

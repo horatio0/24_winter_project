@@ -12,6 +12,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -20,6 +23,18 @@ public class MemberService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ModelMapper modelMapper;
 
+    public Member getMember(String nickname){
+        return memberRepository.getMemberByNickname(nickname);
+    }
+
+    public Set<String> getRecentPlayer(String myId){
+        Set<String> recentPlayerId = new HashSet<>();
+        memberRepository.getReferenceById(myId).getRecentPlayer().forEach(member -> {
+            recentPlayerId.add(member.getMemberId());
+        });
+        return recentPlayerId; 
+    }
+
     //C
     public String join(Member member){
         if(memberRepository.existsById(member.getMemberId())) return "이미 존재하는 아이디 입니다";
@@ -27,6 +42,8 @@ public class MemberService {
         else {
             member.setPassword(bCryptPasswordEncoder.encode(member.getPassword()));
             member.setMoney(100);
+            member.setTotalGame(0);
+            member.setWin(0);
             member.setRole("ROLE_USER");
             memberRepository.save(member);
             return "회원가입이 완료되었습니다.";
@@ -74,5 +91,10 @@ public class MemberService {
 
     public void setMoney(String id, int value){                     //게임 종료 후 머니 업데이트
         memberRepository.getReferenceById(id).setMoney(value);
+    }
+
+    public double getWinRate(String id){
+        Member member = memberRepository.getReferenceById(id);
+        return ((double) member.getWin() / member.getTotalGame());
     }
 }

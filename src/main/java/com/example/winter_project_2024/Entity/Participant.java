@@ -12,6 +12,8 @@ public class Participant {
     private WebSocketSession session;
     private int money;
     @Setter
+    private boolean allInOrDie;
+    @Setter
     private int card;
 
     public void setBet(int value){
