@@ -30,7 +30,7 @@ public class MemberService {
     public Set<String> getRecentPlayer(String myId){
         Set<String> recentPlayerId = new HashSet<>();
         memberRepository.getReferenceById(myId).getRecentPlayer().forEach(member -> {
-            recentPlayerId.add(member.getMemberId());
+            recentPlayerId.add(member.getRecentPlayerId());
         });
         return recentPlayerId; 
     }
