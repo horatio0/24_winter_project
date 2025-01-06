@@ -41,12 +41,12 @@ public class FriendService {
             inviteRepository.inviteAccept(myId, senderId);
 
             Friend friend = new Friend();
-            friend.setMe(me);
+            friend.setMyFriend(me);
             friend.setFriendNickname(sender.getNickname());
             friendRepository.save(friend);
 
             friend = new Friend();
-            friend.setMe(sender);
+            friend.setMyFriend(sender);
             friend.setFriendNickname(me.getNickname());
             friendRepository.save(friend);
 

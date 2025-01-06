@@ -5,7 +5,9 @@ import com.example.winter_project_2024.DTO.MessageDTO;
 import com.example.winter_project_2024.DTO.ParsingDTO;
 import com.example.winter_project_2024.Entity.Member;
 import com.example.winter_project_2024.Entity.Participant;
+import com.example.winter_project_2024.Entity.RecentPlayer;
 import com.example.winter_project_2024.Entity.Room;
+import com.example.winter_project_2024.Repository.MemberRepository;
 import com.example.winter_project_2024.Repository.RoomRegistry;
 import com.example.winter_project_2024.Service.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -33,6 +35,7 @@ public class IndianPokerHandler extends TextWebSocketHandler {
     private final RoomRegistry roomRegistry;
     private final ConcurrentHashMap<String, String> sessionToRoom = new ConcurrentHashMap<>();
     private final MemberService memberService;
+    private final MemberRepository memberRepository;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -69,6 +72,7 @@ public class IndianPokerHandler extends TextWebSocketHandler {
             case "start" :
                 room.setGameState(1);
                 room.setTotalAmount(0);
+                addRecentPlayer(room);
                 broadcast(room, "게임을 시작합니다!", 0, null);
                 shuffle(room);
                 break;
@@ -116,6 +120,21 @@ public class IndianPokerHandler extends TextWebSocketHandler {
         } catch (NullPointerException e){
             broadcast(room, "Err_UserNotFound__", 404, "error");
         }
+    }
+
+    private void addRecentPlayer(Room room){
+        room.getMember().values().forEach(participant -> {
+            Member member = memberRepository.getMemberByNickname(participant.getNickname());
+            room.getMember().values().forEach(participant1 -> {
+                if (!participant1.getNickname().equals(participant.getNickname())){
+                    RecentPlayer recentPlayer = new RecentPlayer();
+                    recentPlayer.setRecentPlayerId(participant1.getNickname());
+                    recentPlayer.setMyRecentPlayer(member);
+
+                    member.getRecentPlayer().add(recentPlayer);
+                }
+            });
+        });
     }
 
     private void shuffle(Room room) throws JsonProcessingException {
